@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3</title>
+</head>
+<body>
+    <header class="page-header">
+        <h1>Loop Methods, MOVIES CRUD REST API (Continued), URLs & XSS</h1>
+        <p class="date">February 12th</p>
+    </header>
+    
+    <main class="day-content">
+
+        <section class="doc-section">
+            <h2>Overview</h2>
+            <p>
+                Day 3 focused on writing more functional JavaScript, expanding the REST API, understanding how URLs are structured, serving HTML with Express, and learning about XSS (Cross-Site Scripting).
+                The main shift was moving from basic loops to functional loop methods, and from simple GET routes to a more CRUD-oriented REST structure.
+            </p>
+        </section>
+
+        <section class="doc-section">
+            <h2>Loop Methods in JavaScript</h2>
+            <p>Instead of using traditional <code>for</code> loops, the focus was on using built-in array methods:</p>
+            <ul>
+                <li><code>.map()</code></li>
+                <li><code>.filter()</code></li>
+                <li><code>.reduce()</code></li>
+                <li><code>.find()</code></li>
+                <li><code>.sort()</code></li>
+                <li><code>.indexOf()</code></li>
+            </ul>
+
+            <h3>Core Rules</h3>
+            <ol>
+                <li>Use loop methods whenever possible.</li>
+                <li>Only use <code>for</code> loops for "finger counting" (not for data transformations).</li>
+                <li>Use <code>.map()</code> instead of <code>.forEach()</code> if you need the returned data.</li>
+            </ol>
+
+
+            <h3>Example: Using <code>.map()</code></h3>
+            <pre class="code-block"><code class="language-js">
+const numbers = [1, 2, 3, 4, 5];
+
+const doubledNumbers = numbers.map(number => number * 2);
+            </code></pre>
+            <p><code>.map()</code> creates a new array and maps 1:1 from the original array.</p>
+
+            <h3>Example: Mapping Objects</h3>
+            <p>
+                Loop methods are also useful when working with arrays of objects.
+                In class we practiced modifying object properties using <code>.map()</code>: 
+            </p>
+
+            <pre class="code-block"><code class="language-js">
+const balloonAnimals = [
+    { type: "Koala", difficulty: 5.0 },
+    { type: "Dog", difficulty: 2.5 },
+    { type: "Giraffe", difficulty: 1.5, isTall: true }
+];
+
+// Task: set all difficulty levels to 3.0 except Koala
+
+const difficultyAdjustedBalloonAnimals = balloonAnimals.map((balloonAnimal) => {
+    if (balloonAnimal.type !== "Koala") {
+        balloonAnimal.difficulty = 3.0;
+    }
+    return balloonAnimal;
+});
+            </code></pre>
+            <p>
+                Here <code>.map()</code> loops through every element and returns a new array with the updated values.
+            </p>
+
+            <h3>Ternary Operator</h3>
+            <p>We also used <strong>ternary operator</strong> to write conditional logic in a more compact way.</p>
+
+            <pre class="code-block"><code class="language-js">
+// condition ? if true : if false
+            </code></pre>
+
+            <pre class="code-block"><code class="language-js">
+const difficultyAdjustedBalloonAnimalsOneLiner = balloonAnimals.map((balloonAnimal) => ({
+    difficulty: balloonAnimal.type !== "Koala" ? 3.0 : balloonAnimal.difficulty,
+    ...balloonAnimal
+}));
+            </code></pre>
+            
+            <p>The spread operator (<code>...</code>) copies the existing object properties, while the ternary operator changes the difficulty based on the condition.</p>
+
+            <h3>Arguments Passed to Loop Methods</h3>
+            <p>Loop methods automatically receive multiple arguments:</p>
+
+            <pre class="code-block"><code class="language-js">
+numbers.map((element, index, originalArray) => {
+    console.log(element, index, originalArray);
+});
+            </code></pre>
+
+            <ul>
+                <li><strong>element</strong> → the current element</li>
+                <li><strong>index</strong> → the position in the array</li>
+                <li><strong>originalArray</strong> → the full array being iterated</li>
+            </ul>
+
+            <h3>Why Loop Methods Are Preferred</h3>
+            <p>A major takeaway from the lecture was that modern JavaScript prefers <strong>functional loop methods</strong> instead of traditional loops.</p>
+            
+            <p>Some of the main advantages are:</p>
+            <ul>
+                <li><strong>Brevity</strong> – fewer lines of code</li>
+                <li><strong>Clarity</strong> – the method name describes the intention</li>
+                <li><strong>Fewer indexing mistakes</strong></li>
+                <li><strong>Easier access to elements and indexes</strong></li>
+                <li><strong>More readable and maintainable code</strong></li>
+            </ul>
+
+            <h3>Example: Traditional Loop vs Loop Method</h3>
+
+            <pre class="code-block"><code class="language-js">
+const numbers = [6, 7, 8, 9];
+
+for (let i = 0; i < numbers.length; i++) {
+    console.log(numbers[i]);
+}
+            </code></pre>
+
+            <p>The same result using a loop method:</p>
+
+            <pre class="code-block"><code class="language-js">
+numbers.forEach((number) => console.log(number));
+            </code></pre>
+            
+            <p>Using <code>.forEach()</code> communicates that we are simply iterating over the list.</p>
+
+            <h3>Avoiding Side Effects</h3>
+            <p>Traditional loops often end up modifying external variables, which can create side effects. Using loop methods like <code>.filter()</code> and <code>.map()</code> helps avoid this and keeps the code cleaner.</p>
+
+            <pre class="code-block"><code class="language-js">
+let oddIndexSideEffect = [];
+let index = 0;
+
+for (number of numbers) {
+    if (index % 2 === 1) {
+        oddIndexSideEffect.push(Number(number));
+    }
+    index++;
+}
+            </code></pre>
+            <p>The same logic using <code>.filter()</code>:</p>
+
+            <pre class="code-block"><code class="language-js">
+const oddNumbers = numbers.filter((element, index) => index % 2 === 1);
+            </code></pre>
+
+            <p>This approach is shorter, easier to read, and avoids unnecessary mutation.</p>
+
+            <h3>Avoid Mutating Arrays</h3>
+            <p>Another key idea was avoiding mutation of the original array.</p>
+
+            <pre class="code-block"><code class="language-js">
+for (index in numbers) {
+    numbers[index] = numbers[index] * 2;
+}
+           </code></pre>
+           
+           <p>This modifies the original array. Instead we can use <code>.map()</code> to create a new array:</p>
+
+           <pre class="code-block"><code class="language-js">
+const doubledList = numbers.map((number) => number * 2);
+            </code></pre>
+
+            <p>This keeps the original data unchanged and returns a new transformed array.</p>
+        </section>
+
+        <section class="doc-section">
+            <h2>Anatomy of a URL</h2>
+            <p>We broke down the structure of a URL into its compenents:</p>
+            <p>Example:</p>
+            <p>https://www.google.com/search?hl=en&q=cool%20search</p>
+
+            <h3>URL Parts</h3>
+            <ul>
+                <li>Protocol → <code>https://</code></li>
+                <li>Subdomain → <code>www</code></li>
+                <li>Domain → <code>google</code></li>
+                <li>Top-level domain → <code>.com</code></li>
+                <li>Path → <code>/search</code></li>
+                <li>Path variable → <code>/search/1</code></li>
+                <li>Query string → <code>?hl=en&q=cool%20search</code></li>
+            </ul>
+        </section>
+
+        <section class="doc-section">
+            <h2>Serving HTML with Express</h2>
+            <p>Instead of only sending JSON, we served HTML files using Express.</p>
+
+            <pre class="code-block"><code class="language-js">
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+            </code></pre>
+            <p>This demonstrated how backend and frontend connect.</p>
+            <p>In <code>index.html</code>, a <code>fetch()</code> call was used to request data from <code>/snowstorms</code> and dynamically update the DOM.</p>
+            <p>This reinforced:</p>
+            <ul>
+                <li>Client → Server communication</li>
+                <li>Fetch API usage</li>
+                <li>DOM manipulation</li>
+            </ul>
+        </section>
+
+        <section class="doc-section">
+            <h2>Status Codes in Express</h2>
+            <p>Status codes were actively used to indicate the result of HTTP requests.</p>
+            <p>Example (404 - Not Found):</p>
+
+            <pre class="code-block"><code class="language-js">
+app.get('/movies/:id', (req, res) => {
+    const providedMovieId = Number(req.params.id);
+    const foundMovie = movies.find(movie => movie.id === providedMovieId);
+
+
+    if (!foundMovie) {
+        return res.status(404).send({
+            errorMessage: `No movie found by ID: ${req.params.id}`
+        });
+    }
+
+
+    res.send(foundMovie);
+});
+            </code></pre>
+
+            <p>Status Code Categories</p>
+            <ul>
+                <li>2xx → Success (e.g. 200 OK)</li>
+                <li>3xx → Redirection</li>
+                <li>4xx → Client errors (e.g. 404 Not Found)</li>
+                <li>5xx → Server errors</li>
+            </ul>
+            <p>Using proper status codes makes the API more predictable and aligned with REST principles.</p>
+        </section>
+
+        <section class="doc-section">
+            <h2>CRUDable REST API - Part II</h2>
+            <p>The Movies API has now been fully completed and supports full CRUD functionality.</p>
+        </section>
+
+    </main>
+    
+    
+    <footer>
+        <span id="copyright-year"></span>
+    </footer>
+
+<script src="/js/footer.js"></script>  
+</body>
+</html>

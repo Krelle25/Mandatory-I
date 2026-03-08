@@ -1,0 +1,21 @@
+{
+  "name": "mandatory-1",
+  "version": "0.0.1",
+  "description": "A documentation-website containing what we learned thorughout the semester (Node.js)",
+  "keywords": [
+    "node",
+    "documentation",
+    "website",
+    "mandatory_1"
+  ],
+  "license": "MIT",
+  "author": "Krelle25",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

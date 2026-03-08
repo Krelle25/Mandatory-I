@@ -1,0 +1,136 @@
+/* Import Font */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&display=swap');
+
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Page */
+body {
+    font-family: "Oswald", sans-serif;
+    background-color: #ECEFF1;
+    color: #191970;
+    line-height: 1.6;
+}
+
+/* Header */
+.page-header {
+    background-color: #191970;
+    color: #ECEFF1;
+    padding: 2rem 2rem;
+    text-align: center;
+}
+
+.page-header h1 {
+    font-weight: 500;
+    font-size: 2.2rem;
+}
+
+.date {
+    margin-top: 0.4rem;
+    opacity: 0.8;
+}
+
+/* Main Layout */
+.day-content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Section Styling */
+.doc-section {
+    margin-bottom: 50px;
+}
+
+.doc-section h2 {
+    font-size: 1.7rem;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #191970;
+    padding-bottom: 5px;
+}
+
+.doc-section h3 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.doc-section p {
+    margin-bottom: 12px;
+}
+
+/* Lists */
+ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+/* Inline Code */
+code {
+    background-color: rgba(25,25,112,0.08);
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Code Blocks */
+.code-block {
+    background-color: #191970;
+    color: #ECEFF1;
+    padding: 18px;
+    border-radius: 8px;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+
+.code-block code {
+    background: none;
+    padding: 0;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead {
+    background-color: #191970;
+    color: #ECEFF1;
+}
+
+th, td {
+    padding: 12px 14px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: rgba(25,25,112,0.06);
+}
+
+tbody tr:hover {
+    background-color: rgba(25,25,112,0.12);
+}
+
+/* Small visual breathing room */
+pre {
+    white-space: pre-wrap;
+    
+}
+
+#copyright-year {
+    background-color: #191970;
+    color: #ECEFF1;
+    text-align: center;
+    padding: 20px;
+    margin-top: 60px;
+}
