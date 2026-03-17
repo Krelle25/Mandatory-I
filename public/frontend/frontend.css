@@ -1,7 +1,45 @@
-#copyright-year {
-    background-color: #191970;
-    color: #ECEFF1;
-    text-align: center;
-    padding: 20px;
-    margin-top: 60px;
+/* Import Font */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&display=swap');
+
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+header.container {
+    padding-top: 3.5rem;
+    padding-bottom: 2rem;
+}
+
+article {
+    height: 100%;
+}
+
+.grid {
+    gap: 2em;
+}
+
+.grid article {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    min-height: 220px;
+    min-width: 200px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid article:hover {
+    transform: translateY(-4px);
+    transition: 0.2s ease;
+}
+
+footer {
+    margin-top: 2rem;
 }

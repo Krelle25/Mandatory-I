@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" type="image/png" href="/assets/images/node.js-documentation_logo.png">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+<% if (pageType === "frontend") { %>
+<link rel="stylesheet" href="/frontend/frontend.css">
+<% } %>
+
+<% if (pageType === "documentation") { %>
+<link rel="stylesheet" href="/documentation/documentation_styles.css">
+<link rel="stylesheet" href="/assets/css/toc.css">
+<% } %>
+
+
+<title><%= title %></title>
+</head>

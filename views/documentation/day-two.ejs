@@ -1,0 +1,373 @@
+    <%- include("../partials/head", { title, pageType }) %>
+
+<body>
+    <%- include("../partials/pageHeader", { heading, date }) %>
+
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+        
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>
+                    Day 2 was where we moved from pure JavaScript into backend development.
+                    We created our <strong>first Node.js server using Express</strong>. 
+                </p>
+                <p>    
+                    We also went deeper into JavaScript concepts like scoping, functions, callbacks, and strict mode.
+                    On top of that, we got introduced to NPM and how package managers and build tools work. 
+                    Part of the exercise was setting up a Node.js project manually and understanding the role of the <code>package.json</code> file.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Clean Code: Strict Mode (and why it matters)</h2>
+                <p>Strict mode helps catch mistakes that JavaScript normally just ignores.</p>
+                
+                <p>Example (bad practice): creating variables without declaring them:</p>
+                <pre class="code-block"><code class="language-js">
+// "use strict";
+// missing declaration type
+// NEVER do this
+totalGlobalVariable = "";
+                </code></pre>
+
+                <p>
+                    This creates a global variable without you noticing it (easy to miss, hard to debug). 
+                    But with strict mode enabled, this would throw an error.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Scoping in JavaScript: <code>var</code> vs <code>let</code></h2>
+
+                <h3>Why <code>var</code> is risky</h3>
+
+                <p><code>var</code> is function-scoped and can “bleed through” blocks, which can cause weird and surprising behavior.</p>
+
+                <pre class="code-block"><code class="language-js">
+// block scope
+{
+    var someVariable = true;
+    {
+        var someVariable = false;
+    }
+    // someVariable is now false
+}
+                </code></pre>
+
+                <h3>Prefer <code>let</code> (block scope)</h3>
+                <p><code>let</code> is block-scoped, which means it makes code easier to understand:</p>
+                <pre class="code-block"><code class="language-js">
+{
+    let someVariable = true;
+    {
+        let someVariable = false;
+    }
+    console.log(someVariable); // true
+}
+            </code></pre>
+
+            <h3><code>var</code> inside loops + async callbacks</h3>
+            <p>When using <code>var</code> in a loop with callbacks (like <code>setTimeout()</code>) the callback sees the final value of <code>i</code>:</p>
+            <pre class="code-block"><code class="language-js">
+for (var i = 0; i < 5; i++) {
+    setTimeout(() => {
+        console.log(i);
+    }, 1000);
+}
+            </code></pre>
+
+            <p>Using <code>let</code> fixes this because each iteration gets its own block-scoped <code>i</code>:</p>
+            <pre class="code-block"><code class="language-js">
+for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+        console.log(i);
+    }, 1000);
+}
+            </code></pre>
+
+            <p><strong>Rule reinforced:</strong> Use <code>const</code> if possible, otherwise <code>let</code>. Avoid <code>var</code>.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Functions in JavaScript</h2>
+
+                <h3>Hoisting</h3>
+                <p>Function declarations are hoisted, meaning they can be called before they appear in the file:</p>
+
+                <pre class="code-block"><code class="language-js">
+console.log(getRandomInt(4, 8));
+
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max + 1 - min) + min);
+}
+                </code></pre>
+
+                <h3>Different ways to write functions</h3>
+                <h4>1. Function declaration</h4>
+
+                <pre class="code-block"><code class="language-js">
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max + 1 - min) + min);
+}
+                </code></pre>
+
+                <h4>2. Anonymous function expression</h4>
+
+                <pre class="code-block"><code class="language-js">
+const getRandomIntAnonymousFunction = function (min, max) {
+    return Math.floor(Math.random() * (max + 1 - min) + min);
+};
+                </code></pre>
+
+                <h4>3. Arrow function</h4>
+                
+                <pre class="code-block"><code class="language-js">
+const getRandomIntArrowFunction = (min, max) => {
+    return Math.floor(Math.random() * (max + 1 - min) + min);
+};
+                </code></pre>
+
+                <h3>Callback Functions (Functions as First-Class Citizens)</h3>
+                <p>
+                    In JavaScript, functions can be passed around like values. 
+                    We practiced this via a “generic action performer” that takes a name and an action (callback):
+                </p>
+
+                <pre class="code-block"><code class="language-js">
+function genericActionPerformer(name, action) {
+    return action(name);
+}
+                </code></pre>
+
+                <p>Example:</p>
+
+                <pre class="code-block"><code class="language-js">
+function eatinAction (name) {
+    return `${name} is eating`;
+}
+
+console.log(genericActionPerformer('Krelle', eatinAction));
+// result: Krelle is eating
+                </code></pre>
+
+                <p>Example: anonymous function callback</p>
+
+                <pre class="code-block"><code class="language-js">
+const runningAction = function (name) {
+    return `${name} is running`;
+}
+
+console.log(genericActionPerformer('Krelle', runningAction));
+// result: Krelle is running
+                </code></pre>
+
+                <p>Example: inline arrow callback (one liner)</p>
+
+                <pre class="code-block"><code class="language-js">
+console.log(genericActionPerformer('Krelle', (name) => `${name} is laughing`));
+// result: Krelle is laughing
+                </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Build Tools & Package Managers: NPM + <code>package.json</code></h2>
+                <p>
+                    To start a Node project, a <code>package.json</code> file is created. 
+                    This file keeps track of the project and the packages we install.
+                </p>
+
+                <h3>Initializing a Node project</h3>
+
+                <pre class="code-block"><code class="language-bash">
+npm init -y
+                </code></pre>
+
+                <p>This command creates a default <code>package.json</code> file in the project.</p>
+
+                <h3>Installing dependencies</h3>
+
+                <pre class="code-block"><code class="language-bash">
+npm install express
+                </code></pre>
+
+                <p>This installs Express and adds it to the <code>dependencies</code> section in <code>package.json</code>.</p>
+
+                <h3>What <code>package.json</code> is used for</h3>
+                <ul>
+                    <li>Describes the project</li>
+                    <li>Tracks dependencies and their versions</li>
+                    <li>Defines scripts that can be run with <code>npm run</code></li>
+                    <li>Allows other developers to install the same dependencies using <code>npm install</code></li>
+                </ul>
+
+                <h3>Why <code>node_modules</code> should not be pushed to Git</h3>
+                <ul>
+                    <li>It contains generated files from installed packages</li>
+                    <li>It can always be recreated using <code>package.json</code> and <code>package-lock.json</code></li>
+                    <li>The folder can be very large and will bloat the repository</li>
+                </ul>
+
+                <p>Instead of pushing <code>node_modules</code>, the folder should be added to <code>.gitignore</code>.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Creating the First Express Server</h2>
+                <h3>Express setup</h3>
+                <p>To create an Express server from scratch in <code>app.js</code>.</p>
+
+                <p>Key steps:</p>
+                <ol>
+                    <li>Import Express</li>
+                    <li>Instantiate the app</li>
+                    <li>Define routes</li>
+                    <li>Start the server on a port</li>
+                </ol>
+
+                <pre class="code-block"><code class="language-js">
+const express = require('express');
+const app = express();
+                </code></pre>
+
+                <h3>Routes created </h3>
+
+                <h4><code>GET /</code></h4>
+                <p>Returns a welcome message:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/', (req, res) => {
+    res.send({ data: "Welcome to the first server!" })
+});
+                </code></pre>
+
+                <h4><code>GET /snowstorms</code></h4>
+                <p>Returns a warning message:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/snowstorms', (req, res) => {
+    res.send({ data: "Snowstorm is coming!" })
+});
+                </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Sending Data with GET Requests</h2>
+
+                <h3>1. Path variables (route params)</h3>
+                <p>Example route:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/cars/:carModel/:year', (req, res) => {
+    console.log(req.params);
+    res.send({ data:`
+        Your ${req.params.carModel} is very nice.
+        Is it from the year ${req.params.year}?
+        `});
+});
+                </code></pre>
+                <ul>
+                    <li><code>`:carModel`</code> and <code>`:year`</code> are dynamic values and come from the URL</li>
+                    <li>These values are available in <code>req.params</code></li>
+                </ul>
+
+                <h3>2. Query string parameters</h3>
+                <p>Example route:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/bag', (req, res) => {
+    res.send({ data: req.query });
+});
+                </code></pre>
+                
+                <ul>
+                    <li>Data is sent after <code>?</code> in the URL</li>
+                    <li>Example: <code>/bag?item=apple&amount=2</code></li>
+                    <li>These values are available in <code>req.query</code></li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Running the Server</h2>
+                <p>The server listens on port <strong>8080</strong></p>
+
+                <pre class="code-block"><code class="language-js">
+app.listen(8080);
+                </code></pre>
+
+                <p>To run it locally:</p>
+                <pre class="code-block"><code class="language-bash">
+node app.js
+                </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Movies API - Part I (GET Only)</h2>
+                <p>
+                    As part of the ongoing REST API-exercises, a simple Movies API was implemented using Express.
+                    The focus of this task was to design and implement the R (Read) part of CRUD, while strictly following REST conventions.
+                    For this part, we kept it simple by not using a database or validation yet, and instead just stored the data in memory using JavaScript variables.
+                </p>
+
+                <h3>Implemented Endpoints</h3>
+                <h4>GET /</h4>
+                <p>Returns a welcome message to verify that the server is running:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/', (req, res) => {
+    res.send({ data: "Welcome to the Movie Server!" });
+});
+                </code></pre>
+
+                <h4>GET /movies</h4>
+                <p>Returns all movies in the collection:</p>
+
+                <pre class="code-block"><code class="language-js">
+
+let movies = [
+    { id: 1, title: 'Batman Begins' },
+    { id: 2, title: 'The Dark Knight' }
+];
+
+app.get('/movies', (req, res) => {
+    res.send({ data: movies });
+});
+                </code></pre>
+                <p>This endpoint returns the full in-memory list, without any filtering or validation.</p>
+
+                <h4>GET /movies/:id</h4>
+                <p>Returns a single movie based on its unique ID:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get("/movies/:id", (req, res) => {
+    const providedMovieId = Number(req.params.id);
+    const foundMovie = movies.find((movie) => movie.id === providedMovieId);
+
+    if (!foundMovie) {
+        res.status(404).send({ errorMessage: `No movie found by id: ${req.params.id}` });
+    } else {
+        res.send(foundMovie);
+    }
+});
+                </code></pre>
+
+                <ul>
+                    <li>The <code>id</code> is passed as a <strong>path parameter</strong> (from the URL)</li>
+                    <li>The server controls the identifier (converts it to a number)</li>
+                    <li>We don't assume anything special about how the movie object is structured - we just try to find it by its <code>id</code></li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Reflections (Day 2)</h2>
+                <ul>
+                    <li>Scoping rules (<code>var vs let</code>) explain a lot of "weird" JavaScript behavior</li>
+                    <li>Callbacks are used everywhere in Node/Express, so understanding them early is important</li>
+                    <li><code>package.json</code> + dependency management is the core part of any Node project</li>
+                    <li>Express routing makes it simple to return data and handle inputs via params and query strings</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <%- include("../partials/footer") %>

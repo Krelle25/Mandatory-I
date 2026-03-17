@@ -1,29 +1,27 @@
-import express from 'express';
-
-import path from 'path';
+import express from "express";
+import documentationRouter from "./routers/documentationRouter.js";
 
 const app = express();
-app.use(express.static('public', {
-    extensions: ['html']
-}));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.resolve('public/frontend/frontend.html'))
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+    res.render("frontend/frontend", {
+        title: "Documentation Website - Node.js",
+        pageType: "frontend"
+    });
 });
 
-app.get('/dayOne.html', (req, res) => {
-    res.sendFile(path.resolve('public/documentation/dayOne.html'));
-});
-
-app.get('/dayTwo.html', (req, res) => {
-    res.sendFile(path.resolve('public/documentation/dayOne.html'));
-});
+app.use("/documentation", documentationRouter);
 
 const PORT = process.env.PORT || 8080;
 
 const server = app.listen(PORT, (error) => {
     if (error) {
         console.log("Could not start the server on: " + PORT);
+        return;
     }
+
     console.log("Server is running on port: " + server.address().port);
 });

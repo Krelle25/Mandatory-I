@@ -1,0 +1,218 @@
+    <%- include("../partials/head", { title, pageType }) %>
+
+<body>
+    <%- include("../partials/pageHeader", { heading, date }) %>
+
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>Day 7 was about server-side rendering (SSR), routers in Express, and how to structure code better.</p>
+                <p>We also worked with reading files, sync vs async, and understanding where code runs and when.</p> 
+            </section>
+
+            <section class="doc-section">
+                <h2>Express Router</h2>
+                <h3>Using Routers</h3>
+                <p>Instead of having everything inside <code>app.js</code>, we moved the routes into separate files using Express Router.</p>
+
+                <pre class="code-block"><code class="language-js">
+import { Router } from 'express';
+
+const router = Router();
+
+router.post('/api/repl', (req, res) => {
+    if (!req.body) {
+        return res.status(400).send({ errorMessage: 'Missing a JSON body' });
+    }
+
+    const { replCode, sandboxId } = req.body;
+
+    if (!replCode) {
+        return res.status(400).send({ errorMessage: 'Missing the key replCode in the JSON body' });
+    }
+
+    res.send({ data: { success, output, result } });
+});
+
+export default router;
+                </code></pre>
+
+                <h3>Using it in <code>app.js</code></h3>
+                <pre class="code-block"><code class="language-js">
+import replRouter from './routers/replRouter.js';
+
+app.use(replRouter);
+                </code></pre>
+                <p>This makes <code>app.js</code> much cleaner and easier to read.</p>
+                <p>Instead of having both page routes and API logic in one file, we separate it into smaller files.</p>
+
+                <p>This means:</p>
+                <ul>
+                    <li>Each file has a clear purpose</li>
+                    <li>The code is easier to navigate</li>
+                    <li>It becomes easier to debug and maintain</li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Structuring the Code</h2>
+                <h3>Splitting files</h3>
+                
+                <p>We talked about how to avoid having one very long file.</p>
+
+                <h3>Example structure</h3>
+                <ul>
+                    <li><code>routers/</code> → handles routes</li>
+                    <li><code>util/</code> → helper functions</li>
+                    <li><code>public/</code> → frontend files</li>
+                </ul>
+
+                <p>Before this, everything was placed inside <code>app.js</code>, which quickly becomes hard to manage.</p>
+                <p>By splitting the code into folders, we avoid mixing different responsibilities.</p>
+                <p>This is especially important as the project grows, since large files are harder to read and maintain.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Reading Files (fs = File System)</h2>
+                <p>This is useful in server-side rendering, where the server reads HTML files and sends the finished page directly to the client.</p>
+                <p>The <code>.toString()</code> part is needed because <code>readFileSync()</code> returns a buffer, not plain text.</p>
+
+                <h3>Example</h3>
+                <pre class="code-block"><code class="language-js">
+import fs from 'fs';
+
+const page = fs.readFileSync('./public/pages/about/about.html').toString();
+                </code></pre>
+
+                <p>This reads the file and converts it into a string so it can be sent as a response.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Sync vs Async</h2>
+                
+                <h3>Synchronous</h3>
+                <p>The server waits until the file is fully read before continuing.</p>
+                <pre class="code-block"><code class="language-js">
+import fs from 'fs';
+
+const page = fs.readFileSync('./public/pages/about/about.html').toString();
+                </code></pre>
+
+                <h3>Asynchronous</h3>
+                <p>The server continues running while the file is being read.</p>
+                <pre class="code-block"><code class="language-js">
+fs.readFile('./public/pages/about/about.html', (error, data) => {
+    if (error) {
+        console.log(error);
+        return;
+    }
+
+    const page = data.toString();
+    console.log(page);
+});
+                </code></pre>
+
+                <p>Differences</p>
+                <ul>
+                    <li>Sync blocks the server while the file is being read</li>
+                    <li>Async allows other work to continue while the file loads</li>
+                </ul>
+                
+                <h3>What we used</h3>
+                <p>In this case, sync made sense because we need the file before sending it.</p>
+                <p>But in bigger apps, async would usually be better for performance.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Code Placement</h2>
+
+                <h3>Startup code</h3>
+                <p>Code that runs when the server starts.</p>
+
+                <pre class="code-block"><code class="language-js">
+import fs from 'fs';
+
+// Runs once when the server starts
+const aboutPage = fs.readFileSync('./public/pages/about/about.html').toString();
+
+app.get('/about', (req, res) => {
+    res.send(aboutPage);
+});
+                </code></pre>
+                <p><p>Here the file is loaded once at startup, so the route can respond faster.</p></p>
+
+                <h3>Per request code</h3>
+                <p>Code that runs every time a user makes a request.</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/about', (req, res) => {
+    const aboutPage = fs.readFileSync('./public/pages/about/about.html').toString();
+    res.send(aboutPage);
+});
+                </code></pre>
+                <p>Here the file is read every time the route is requested, which works but is less efficient.</p>
+
+                <p>Understanding this helps with performance and efficiency.</p>
+                <p>For example:</p>
+                <ul>
+                    <li>If something runs on every request, it can slow down the app</li>
+                    <li>If it runs once at startup, it only happens once and can improve performance</li>
+                </ul>
+
+            </section>
+
+            <section class="doc-section">
+                <h2>SSR vs CSR</h2>
+
+                <h3>SSR (Server-side rendering)</h3>
+                <ul>
+                    <li>Server sends ready HTML</li>
+                    <li>Faster first load</li>
+                    <li>Better for SEO</li>
+                </ul>
+
+                <h3>CSR (Client-side rendering)</h3>
+                <ul>
+                    <li>Browser builds the page</li>
+                    <li>More work on client</li>
+                    <li>Slower initial load</li>
+                </ul>
+
+                <h3>Other differences</h3>
+                <ul>
+                    <li>SSR avoids CORS issues</li>
+                    <li>CSR often requires API calls from browser</li>
+                </ul>
+
+                <p>In simple terms, SSR focuses on faster first load, while CSR focuses on dynamic interaction after the page has loaded.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Nodemon Config</h2>
+
+                <h3>Config file</h3>
+                <pre class="code-block"><code class="language-json">
+{
+    "ext": "js, json, html, css"
+}
+                </code></pre>
+
+                <p>This makes nodemon restart when more file types change.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Reflections (Day 7)</h2>
+                <ul>
+                    <li>Routers make the project much cleaner</li>
+                    <li>Splitting code into smaller files makes a big difference</li>
+                    <li>Understanding when code runs is actually important</li>
+                    <li>SSR vs CSR helped understand how pages are rendered</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <%- include("../partials/footer") %>

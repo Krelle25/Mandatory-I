@@ -1,0 +1,264 @@
+    <%- include("../partials/head", { title, pageType }) %>
+
+<body>
+    
+    <%- include("../partials/pageHeader", { heading, date }) %>
+
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>
+                    Day 1 was mostly about getting into the core JavaScript basics and understanding stuff we need later for backend.
+                    We also went through the fundamentals of REST API-design.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>JavaScript Fundamentals</h2>
+
+                <h3>Variables: <code>const</code> vs <code>let</code></h3>
+                <p>
+                    One of the main rules we were told on day one:
+                </p>
+                <ul>
+                    <li>Use <code>const</code> by default</li>
+                    <li>Use <code>let</code> only when reassignment is required</li>
+                </ul>
+
+                <pre class="code-block"><code class="language-js">
+const luckyNumber = 4;
+console.log(luckyNumber);
+                </code></pre>
+
+                <p>
+                    Using <code>const</code> means you can't reasign the variable itself. However, when working with objects and arrays, their contents can still be changed.
+                </p>
+
+                <h3>Objects</h3>
+                <p>Objects store data as key-value pairs.</p>
+
+                <pre class="code-block"><code class="language-js">
+const person = {
+    name: "Kristian"
+};
+
+person.name = "Knud";
+person.age = 82;
+                </code></pre>
+
+                <p>This shows that:</p>
+                <ul>
+                    <li>You can change existing properties</li>
+                    <li>You can add new properties</li>
+                    <li>Declaring an object with <code>const</code> does not make it immutable</li>
+                </ul>
+
+                <h3>Arrays</h3>
+                <p>Arrays are also mutable, even when declared with <code>const</code>.</p>
+
+                <pre class="code-block"><code class="language-js">
+const people = [];
+people.push("Krelle");
+                </code></pre>
+
+                <p>Although the array itself cannot be reassigned, its contents can still be changed</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>JavaScript Data Types</h2>
+                <p>We also went thorugh the main JavaScript data types:</p>
+                <ul>
+                    <li><code>String</code> = textual value</li>
+                    <li><code>Number</code> = numeric value</li>
+                    <li><code>Boolean</code> = logical values (true or false)</li>
+                    <li><code>BigInt</code> = very large integers</li>
+                    <li><code>Object</code> = collection of key-value pairs</li>
+                    <li><code>Symbol</code> = unique and immutable value</li>
+                    <li><code>null</code> = intentional absence of value</li>
+                    <li><code>undefined</code> = declared variable but yet to be assigned a value</li>
+                </ul>
+
+                <h3>JSON vs JavaScript Objects</h3>
+                <p>We talked about the difference between JSON and JavaScript objects.</p>
+                
+                <p>JSON requires quotation marks ("") around the key:</p>
+                    <pre class="code-block"><code class="language-json">
+{
+    "name": "Kristian"
+}
+                    </code></pre>
+                
+                <p>JavaScript objects don't:</p>
+                    <pre class="code-block"><code class="language-js">
+const person = {
+    name: "Kristian"
+}
+                    </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Type Coercion & Equality</h2>
+
+                    <h3>Type Coercion</h3>
+                    <p>
+                        JavaScript can automatically convert values between types when doing operations or comparisons.
+                        This behavior is called type coercion.
+                        While sometimes convenient, implicit type coercion can lead to unexpected results and subtle bugs.
+                    </p>
+
+                    <pre class="code-block"><code class="language-js">
+const year = "2025";
+const increment = 1;
+const currentYearFirst = year + increment;
+// result = 20251, and this is because of "implicit type coercion"
+                    </code></pre>
+
+                    <p>To avoid this:</p>
+                    <pre class="code-block"><code class="language-js">
+const currentYearFirst = Number(year) + increment;
+const currentYearSecond = parseInt(year) + increment;
+const currentYearThird = +year + increment;
+// result = 2026 because of converting the string to a number
+                    </code></pre>
+
+                    <h3>Equality</h3>
+                    <p>
+                        JavaScript provides two ways to compare values for equality: <code>==</code> (loose equality) and <code>===</code> (strict equality).
+                        The difference is how JavaScript handles type conversion during the comparison.
+                    </p>
+
+                    <pre class="code-block"><code class="language-js">
+5 == "5"   // true
+5 === "5"  // false
+                    </code></pre>
+
+                    <p>
+                        Loose equality (<code>==</code>) performs implicit type coercion before comparing the values. 
+                        Strict equality (<code>===</code>) does not perform type conversion and checks for both the value and the type to match.
+                    </p>
+
+                    <ul>
+                        <li>Prefer strict equality <code>===</code>, which compares both value and type</li>
+                        <li>Avoid loose equality <code>==</code>, as it performs implicit type conversion</li>
+                        <li>Convert values when needed (<code>parseInt()</code>, <code>parseFloat()</code>)</li>
+                    </ul>
+                </section>
+
+            <section class="doc-section">
+                <h2>String in JavaScript</h2>
+                <p>There are three common ways to write and define strings in JavaScript:</p>
+                <ul>
+                    <li><code>"double quotes"</code></li> 
+                    <li><code>'single quotes'</code></li>
+                    <li><code>`template literals`</code></li>
+                </ul>
+
+                <p>Template literals let you insert variables directly (this is called 'String Interpolation'):</p>
+                
+                <pre class="code-block"><code class="language-js">
+const firstName = "Kristian";
+const lastName = "Steffensen";
+
+`My first name is ${firstName} and my last name is ${lastName}`
+                </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Automatic Semicolon Insertion (ASI)</h2>
+                <p>
+                    JavaScript automatically inserts semicolons in many cases.
+                    This is called "Automatic Semicolon Insertion".
+                    Although this is a smart feature, relying on ASI is not recommended, as it can sometimes lead to weird and unexpected behavior.
+                    It is better to write the semicolons yourself and keep it consistent. 
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>REST API Design Exercise</h2>
+                <h3>Topic: Beers</h3>
+                <p>We had to design a CRUD based REST API on the topic <strong>'Beers'</strong>.</p>
+
+                <p>Design Goals:</p>
+                <ul>
+                    <li>Follow REST conventions</li>
+                    <li>Use the correct HTTP method for each action</li>
+                    <li>Use clear, pluralized resource names for endpoints</li>
+                    <li>Ensure endpoints represent a collection of resources</li>
+                </ul>
+
+                <h3>HTTP Methods</h3>
+                <p>
+                    Each CRUD operation maps to a specific HTTP method.
+                    Using the correct method helps make APIs predictable, consistent, and easier to understand.
+                </p>
+
+                <ul>
+                    <li><code>GET</code> → Retrieve data from the server</li>
+                    <li><code>POST</code> → Create a new resource</li>
+                    <li><code>PUT</code> → Replace an existing resource</li>
+                    <li><code>PATCH</code> → Partially update an existing resource</li>
+                    <li><code>DELETE</code> → Remove a resource</li>
+                </ul>
+
+                <h3>CRUD Operations</h3>
+                <p>
+                    REST APIs usually follow the CRUD model, which describes the four basic things you typically want to do with data in an application.
+                </p>
+
+                <ul>
+                    <li><strong>Create</strong> → <code>POST</code></li>
+                    <li><strong>Read</strong> → <code>GET</code></li>
+                    <li><strong>Update</strong> → <code>PUT</code>/<code>PATCH</code></li>
+                    <li><strong>Delete</strong> → <code>DELETE</code></li>
+                </ul>
+                <p>
+                    When working with APIs, it helps alot to keep endpoints in a consistent order.
+                    Typically, endpoints are grouped by resource and listed in the same logical order as the CRUD operations:
+                    <code>GET</code>, <code>POST</code>, <code>PUT</code>/<code>PATCH</code>, and <code>DELETE</code>.
+                </p>
+                
+                <h3>Example: API Design (Beer)</h3>
+                <p>
+                    In REST APIs, endpoints represent resources (nouns) rather than actions (verbs).
+                    For example:
+                    <ul>
+                        <li><code>/beers</code> represents the beer collection, while</li>
+                        <li><code>/beers/{id}</code> represents a specific beer.</li>
+                    </ul>
+                </p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>GET</td><td>/beers</td><td>Retrieve all beers</td></tr>
+                        <tr><td>GET</td><td>/beers/{id}</td><td>Retrieve a beer by id</td></tr>
+                        <tr><td>POST</td><td>/beers</td><td>Create a new beer</td></tr>
+                        <tr><td>PUT</td><td>/beers/{id}</td><td>Update an entire beer</td></tr>
+                        <tr><td>PATCH</td><td>/beers/{id}</td><td>Update parts of a beer</td></tr>
+                        <tr><td>DELETE</td><td>/beers/{id}</td><td>Delete a beer</td></tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <section class="doc-section">
+                <h2>Reflections (Day 1)</h2>
+                <ul>
+                    <li>The JavaScript fundamentals are super important, not just for frontend, but also when we start doing backend development</li>
+                    <li>Small mistakes (like type coercion) can cause weird bugs</li>
+                    <li>Using <code>===</code> instead of <code>==</code> avoids a lot of issues</li>
+                    <li>Designing REST APIs should definetly be done <strong>before implementing</strong></li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <%- include("../partials/footer") %>

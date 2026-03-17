@@ -1,0 +1,445 @@
+    <%- include ("../partials/head", { title, pageType }) %>
+
+<body>
+    <%- include("../partials/pageHeader", { heading, date }) %>
+    
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>
+                    Day 3 was about writing more "functional" JavaScript and expanding the REST API
+                    We also looked at how URL's are structured, how to serve HTML with Express, and learning about XSS (Cross-Site Scripting).
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Loop Methods in JavaScript</h2>
+                <p>Instead of using traditional <code>for</code> loops, we focused more on using built-in array methods:</p>
+                <ul>
+                    <li><code>.map()</code></li>
+                    <li><code>.filter()</code></li>
+                    <li><code>.reduce()</code></li>
+                    <li><code>.find()</code></li>
+                    <li><code>.sort()</code></li>
+                    <li><code>.indexOf()</code></li>
+                </ul>
+
+                <h3>Core Rules</h3>
+                <ol>
+                    <li>Use loop methods whenever possible.</li>
+                    <li>Only use <code>for</code> loops for "finger counting" (not for data transformations).</li>
+                    <li>Use <code>.map()</code> instead of <code>.forEach()</code> if you need the returned data.</li>
+                </ol>
+
+                <h3>Example: Using <code>.map()</code></h3>
+                <pre class="code-block"><code class="language-js">
+const numbers = [1, 2, 3, 4, 5];
+
+const doubledNumbers = numbers.map(number => number * 2);
+                </code></pre>
+                <p><code>.map()</code> creates a new array and maps 1:1 from the original array.</p>
+
+                <h3>Mapping Objects</h3>
+                <p>
+                    Loop methods are also useful when working with arrays of objects.
+                    In class we practiced modifying object properties using <code>.map()</code>: 
+                </p>
+
+                <pre class="code-block"><code class="language-js">
+const balloonAnimals = [
+    { type: "Koala", difficulty: 5.0 },
+    { type: "Dog", difficulty: 2.5 },
+    { type: "Giraffe", difficulty: 1.5, isTall: true }
+];
+
+const difficultyAdjustedBalloonAnimals = balloonAnimals.map((balloonAnimal) => {
+    if (balloonAnimal.type !== "Koala") {
+    balloonAnimal.difficulty = 3.0;
+}
+    return balloonAnimal;
+});
+                </code></pre>
+                <p>
+                    Here <code>.map()</code> loops through every element and returns a new array with the updated values.
+                </p>
+
+                <h3>Ternary Operator</h3>
+                <p>We also used the <strong>ternary operator</strong> to write conditional logic in a more compact way.</p>
+
+                <pre class="code-block"><code class="language-js">
+// condition ? if true : if false
+                </code></pre>
+
+                <pre class="code-block"><code class="language-js">
+const difficultyAdjustedBalloonAnimalsOneLiner = balloonAnimals.map((balloonAnimal) => ({
+    difficulty: balloonAnimal.type !== "Koala" ? 3.0 : balloonAnimal.difficulty,
+    ...balloonAnimal
+}));
+                </code></pre>
+                
+                <p>The spread operator (<code>...</code>) copies the existing object properties, while the ternary operator changes the difficulty based on the condition.</p>
+                <p>Looks confusing at first, but it's just a shorter way of writing it.</p>
+
+                <h3>Arguments Passed to Loop Methods</h3>
+                <p>Loop methods automatically receive multiple arguments:</p>
+
+                <pre class="code-block"><code class="language-js">
+numbers.map((element, index, originalArray) => {
+    console.log(element, index, originalArray);
+});
+                </code></pre>
+
+                <ul>
+                    <li><strong>element</strong> → the current element</li>
+                    <li><strong>index</strong> → the position in the array</li>
+                    <li><strong>originalArray</strong> → the full array being iterated</li>
+                </ul>
+
+                <h3>Why Loop Methods Are Preferred</h3>
+                <p>One big takeaway was that modern JavaScript prefers loop methods over traditional loops.</p>
+                
+                <p>Some of the main advantages are:</p>
+                <ul>
+                    <li><strong>Brevity</strong> → fewer lines of code</li>
+                    <li><strong>Clarity</strong> → the method name describes the intention</li>
+                    <li><strong>Fewer indexing mistakes</strong></li>
+                    <li><strong>Easier access to elements and indexes</strong></li>
+                    <li><strong>More readable and maintainable code</strong></li>
+                </ul>
+
+                <h3>Example: Traditional Loop vs Loop Method</h3>
+
+                <pre class="code-block"><code class="language-js">
+const numbers = [6, 7, 8, 9];
+
+for (let i = 0; i < numbers.length; i++) {
+    console.log(numbers[i]);
+}
+                </code></pre>
+
+                <p>The same result using a loop method:</p>
+
+                <pre class="code-block"><code class="language-js">
+numbers.forEach((number) => console.log(number));
+                </code></pre>
+                
+                <p>Using <code>.forEach()</code> communicates that we are simply iterating over the list.</p>
+                <p>Looks cleaner as well.</p>
+
+                <h3>Avoiding Side Effects</h3>
+                <p>
+                    Traditional loops often end up modifying external variables, which can create side effects.
+                    Using loop methods like <code>.filter()</code> and <code>.map()</code> helps avoid this and keeps the code cleaner.
+                </p>
+
+                <pre class="code-block"><code class="language-js">
+let oddIndexSideEffect = [];
+let index = 0;
+
+for (number of numbers) {
+    if (index % 2 === 1) {
+        oddIndexSideEffect.push(Number(number));
+    }
+        index++;
+}
+                </code></pre>
+                <p>The same logic using <code>.filter()</code>:</p>
+
+                <pre class="code-block"><code class="language-js">
+const oddNumbers = numbers.filter((element, index) => index % 2 === 1);
+                </code></pre>
+
+                <p>This approach is shorter, easier to read, and avoids messing with the original data.</p>
+
+                <h3>Avoid Mutating Arrays</h3>
+                <p>Another key idea was avoiding mutation of the original array.</p>
+
+                <pre class="code-block"><code class="language-js">
+for (index in numbers) {
+    numbers[index] = numbers[index] * 2;
+}
+            </code></pre>
+            
+            <p>This modifies the original array. Instead we can use <code>.map()</code> to create a new array:</p>
+
+            <pre class="code-block"><code class="language-js">
+const doubledList = numbers.map((number) => number * 2);
+                </code></pre>
+
+                <p>This keeps the original data unchanged and returns a new transformed array.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Anatomy of a URL</h2>
+                <p>We broke down the structure of a URL into its components:</p>
+                <p>Example:</p>
+                <p>https://www.google.com/search?hl=en&q=cool%20search</p>
+
+                <h3>URL Parts</h3>
+                <ul>
+                    <li>Protocol → <code>https://</code></li>
+                    <li>Subdomain → <code>www</code></li>
+                    <li>Domain → <code>google</code></li>
+                    <li>Top-level domain (TLD) → <code>.com</code></li>
+                    <li>Path → <code>/search</code></li>
+                    <li>Path variable → <code>/search/1</code></li>
+                    <li>Query string → <code>?hl=en&q=cool%20search</code></li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Serving HTML with Express</h2>
+                <p>Instead of only sending JSON, we served HTML files using Express.</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+                </code></pre>
+                <p>This demonstrated how backend and frontend actually talk to each other.</p>
+                <p>In <code>index.html</code>, a <code>fetch()</code> call was used to request and get data from <code>/snowstorms</code> and dynamically update the DOM.</p>
+
+            <section class="doc-section">
+                <h2>Parsing JSON with Express</h2>
+                <p>To handle POST requests correctly, built-in middleware was enabled:</p>
+
+                <pre class="code-block"><code class="language-js">
+app.use(express.json());
+                </code></pre>
+                <p>Why this is necessary:</p>
+                <ul>
+                    <li>Parses incoming JSON request bodies</li>
+                    <li>Makes the data available on req.body</li>
+                    <li>Without it, req.body would be undefined</li>
+                </ul>
+
+                <p>Example usage:</p>
+                <pre class="code-block"><code class="language-js">
+app.post('/energydrinks', (req, res) => {
+    energyDrinks.push(req.body);
+    res.send(req.body);
+});
+                </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Status Codes in Express</h2>
+                <p>Status codes were actively used to indicate the result of HTTP requests.</p>
+                <p>Example (404 - Not Found):</p>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/movies/:id', (req, res) => {
+    const providedMovieId = Number(req.params.id);
+    const foundMovie = movies.find(movie => movie.id === providedMovieId);
+
+    if (!foundMovie) {
+        return res.status(404).send({
+            errorMessage: `No movie found by ID: ${req.params.id}`
+        });
+}
+
+    res.send(foundMovie);
+});
+                </code></pre>
+
+                <p>Status Code Categories</p>
+                <ul>
+                    <li>2xx → Success (e.g. 200 OK)</li>
+                    <li>3xx → Redirection</li>
+                    <li>4xx → Client errors (e.g. 404 Not Found)</li>
+                    <li>5xx → Server errors</li>
+                </ul>
+                <p>Using the right status codes makes the API easier to understand and more consistent.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Nodemon</h2>
+                <p>
+                    <strong>Nodemon</strong> was introduced. It is a development tool that automatically restarts a Node.js server whenever files in the project change.
+                    This makes development faster because the server doesn't need to be restarted manually after every code change.
+                </p>
+
+                <p>
+                    Instead of stopping the server and running <code>node app.js</code> again every time the code is updated,
+                    Nodemon watches the project files and restarts the server automatically.
+                </p>
+                
+                <p>Important:</p>
+                <ul>
+                    <li>It is used only in development.</li>
+                    <li>It should not be used in production.</li>
+                </ul>
+
+                <h3>Installing Nodemon</h3>
+                <p>Nodemon can be installed using <code>npm</code> from the terminal.</p>
+
+                <pre class="code-block"><code class="language-bash">
+npm install -g nodemon
+                </code></pre>
+                
+                <p>
+                    The <code>-g</code> flag installs Nodemon globally, meaning it can be used in any Node.js project on the system.
+                </p>
+
+                <h3>Running the server with Nodemon</h3>
+
+                <pre class="code-block"><code class="language-bash">
+nodemon app.js
+                </code></pre>
+
+                <p>After starting the server with Nodemon, any changes to the project files will automatically restart the server.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>XSS (Cross-Site Scripting)</h2>
+                <p>
+                    In class we looked at <strong>XSS</strong> (Cross-Site Scripting).  
+                    XSS happens when you insert unsafe input into a webpage and the browser treats it as real HTML or JavaScript.
+                </p>
+
+                <h3>Serving an Example Page</h3>
+
+                <pre class="code-block"><code class="language-js">
+app.get('/xss', (req, res) => {
+    res.sendFile(__dirname + '/xss.html');
+});
+                </code></pre>
+
+                <p>This route simply serves a page where the example can be tested.</p>
+
+                <h3>Unsafe Example</h3>
+
+                <p>
+                    Using <code>innerHTML</code> can be dangerous because the browser will interpret the string as HTML.
+                </p>
+
+                <pre class="code-block"><code class="language-js">
+const container = document.getElementById("container");
+
+const userInput = "<b>Injected content</b>";
+
+container.innerHTML = userInput;
+                </code></pre>
+
+                <p>Here the browser renders the HTML directly, which could be risky if the input comes from a user.</p>
+
+                <h3>Safer Approach</h3>
+
+                <p>A safer option is using <code>textContent</code>, which treats the input as plain text.</p>
+
+                <pre class="code-block"><code class="language-js">
+const container = document.getElementById("container");
+
+const userInput = "<b>Injected content</b>";
+
+container.textContent = userInput;
+                </code></pre>
+
+                <p>This displays the text instead of interpreting it as HTML.</p>
+
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>Never trust input that ends up in the browser</li>
+                    <li><code>innerHTML</code> can be dangerous if the content is not controlled</li>
+                    <li><code>textContent</code> is safer when displaying user input</li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>CRUDable REST API - Part II</h2>
+                <p>The Movies API has now been fully completed and supports full CRUD functionality.</p>
+                <p>Below is the full implementation of the Movies REST API built in class</p>
+
+                <pre class="code-block"><code class="language-js">
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+let movies = [
+    { id: 1, title: 'Batman Begins' },
+    { id: 2, title: 'The Dark Knight' }
+];
+
+let nextId = 3;
+
+app.get("/movies", (req, res) => {
+    res.send({ data: movies });
+});
+
+app.get("/movies/:id", (req, res) => {
+    const providedMovieId = Number(req.params.id);
+    const foundMovie = movies.find((movie) => movie.id === providedMovieId);
+
+    if (!foundMovie) {
+        return res.status(404).send({ errorMessage: `No movie found by id: ${req.params.id}` });
+    }
+    
+    res.send(foundMovie);        
+});
+
+app.post("/movies", (req, res) => {
+    if (!req.body) {
+        return res.status(400).send({ errorMessage: 'No JSON body provided.' });
+    }
+    
+    const providedMovie = req.body;
+    
+    providedMovie.id = nextId++;
+
+    movies.push(providedMovie);
+    
+    res.send({ data: providedMovie });
+});
+
+app.patch("/movies/:id", (req, res) => {
+    const providedMovieId = Number(req.params.id);
+    const foundMovieIndex = movies.findIndex((movie) => movie.id === providedMovieId);
+
+    if (foundMovieIndex === -1) {
+        res.status(404).send({ errorMessage: `No movie found by id: ${req.params.id}` });
+    }
+
+    const foundMovie = movies[foundMovieIndex];
+    const providedMovie = req.body;
+
+    const movieToCreate = { ...foundMovie, ...providedMovie, id: providedMovieId };
+    movies[foundMovieIndex] = movieToCreate;
+
+    res.send({ data: movieToCreate });
+});
+
+
+app.delete("/movies/:id", (req, res) => {
+    const providedMovieId = Number(req.params.id);
+    const foundMovieIndex = movies.findIndex((movie) => movie.id === providedMovieId);
+
+    if (foundMovieIndex === -1) {
+        return res.status(404).send({ errorMessage: `No movie found by id: ${req.params.id}` });
+    }
+
+    movies.splice(foundMovieIndex, 1);
+
+    res.status(204).send();
+});
+
+app.listen(8080);
+                </code></pre>
+            </section>
+        <section class="doc-section">
+                <h2>Reflections (Day 3)</h2>
+                <ul>
+                    <li>Loop methods makes code cleaner and easier to read</li>
+                    <li>It's important not to mutate data unless you really mean to</li>
+                    <li>Understanding URLs helps a lot when building APIs</li>
+                    <li>Understanding how the client and server communicate is essential for full-stack development</li>
+                    <li>Considering security (like XSS) must be understood early, even in small projects</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <%- include("../partials/footer") %>

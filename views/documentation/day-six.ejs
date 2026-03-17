@@ -1,0 +1,177 @@
+    <%- include("../partials/head", { title, pageType }) %>
+
+<body>
+    <%- include("../partials/pageHeader", { heading, date }) %>
+
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>
+                    Day 6 was about client vs server, environment variables, and improving how we structure our frontend.
+                </p>
+                <p>
+                    We also worked with npm scripts, semantic HTML, and styling things like making the footer stay at the bottom.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>NPM Scripts</h2>
+                <p>
+                    We used <code>package.json</code> to define scripts so we don't have to type long commands every time we want to run the app.
+                </p>
+
+                <pre class="code-block"><code class="language-json">
+"scripts": {
+    "start-dev": "cross-env PORT=8080 NODE_ENV=DEV node app.js",
+    "start-prod": "cross-env PORT=80 node app.js"
+}
+                </code></pre>
+                
+                <p>Instead of writing everything manually in the terminal, we can now just run:</p>
+
+                <pre class="code-block"><code class="language-bash">
+npm run start-dev
+                </code></pre>
+                
+                <p>This makes things more consistent, especially when working in groups. Everyone runs the app the same way.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Environment Variables</h2>
+                <p>Environment variables are values that are not written directly in the code, but instead set outside the application.</p>
+
+                <p>We used them for things like setting the port:</p>
+
+    <pre class="code-block"><code class="language-js">
+const PORT = process.env.PORT || 8080;
+
+const server = app.listen(PORT, () => {
+    console.log("Server started on port", server.address().port);
+});
+                </code></pre>
+
+                <p>If no environment variable is set, it just falls back to 8080.</p>
+
+                <h3>Why this is useful</h3>
+                <ul>
+                    <li>Different setup for development and production</li>
+                    <li>Avoid hardcoding values in the code</li>
+                    <li>Safer for things like API keys or passwords</li>
+                </ul>
+
+                <h3>Short-circuit Syntax</h3>
+                <p>In the example above, we use <code>||</code>, which is also called 'short-curcuit syntax'.</p>
+                <p>It takes the first value (if it exists) and if not, then use the second one.</p>
+
+                <pre class="code-block"><code class="language-js">
+const PORT = process.env.PORT || 8080;
+                </code></pre>
+
+                <p>So if <code>process.env.PORT</code> is defined, it will use that. But if not, it falls back to <code>8080</code>.</p>
+                <p>This is very useful when you want a default value without writing an if-statement.</p>
+
+                <p>Same idea works for other values, not just ports:</p>
+                <pre class="code-block"><code class="language-js">
+const username = input || "guest";
+                </code></pre>
+            </section>
+
+            <section class="doc-section">
+                <h2>Semantic HTML</h2>
+                <p>We started using semantic HTML like <code>nav</code>, <code>main</code> and <code>footer</code>.</p>
+
+                <pre class="code-block"><code class="language-html">
+&lt;nav&gt;&lt;/nav&gt;
+&lt;main&gt;&lt;/main&gt;
+&lt;footer&gt;&lt;/footer&gt;
+                </code></pre>
+
+                <p>These tags describe what the content actually is, not just how it looks.</p>
+                <p>It also helps with accessibility and makes the structure easier to read.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Project Structure</h2>
+                <p>
+                    We improved the project structure by separating pages and assets.
+                </p>
+
+                <pre class="code-block"><code class="language-bash">
+public/
+├── assets/
+│   ├── css/
+│   ├── js/
+│   └── images/
+└── pages/
+    ├── about/
+    └── frontend/
+                </code></pre>
+                <p>This makes it easier to find things instead of everything being mixed together.</p>
+                <p>Makes more sense when the project starts growing.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Sticky Footer</h2>
+                <p>The problem was that the footer would float in the middle if there wasn't much content.</p>
+                
+                <p>We fixed it using flexbox:</p>
+
+                <pre class="code-block"><code class="language-css">
+body {
+    min-height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+                </code></pre>
+                <p>Result:</p>
+                <p>With this simple setup, the footer sticks to the bottom of the page, no matter how much content is above it, which gives it a proffesional look.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>CDN vs Local</h2>
+                <p>We used a CDN to include styling to our code with <code>water.css</code> instead of writing all CSS ourselves.</p>
+
+                <pre class="code-block"><code class="language-html">
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"&gt;
+                </code></pre>
+
+                <h3>What is a CDN?</h3>
+                <p>A CDN (Content Delivery Network) is basically a way to load files from the internet instead of storing them in your project.</p>
+                <p>So instead of downloading a CSS file and putting it in your project, you just link it from somewhere else.</p>
+                <p>And in this case, we are loading <code>water.css</code> directly from a CDN.</p>
+
+
+                <h3>Why use it?</h3>
+                <ul>
+                    <li>Very quick to set up</li>
+                    <li>Can include your own styling on top of the CDN</li>
+                    <li>No need to install or manage files locally</li>
+                    <li>Good for testing</li>
+                </ul>
+
+                <h3>Downsides</h3>
+                <ul>
+                    <li>You are depending on a external service</li>
+                    <li>If the CDN is down, your styling wont work</li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Reflections (Day 6)</h2>
+                <ul>
+                    <li>NPM scripts make running the app much easier, and more consistent</li>
+                    <li>Improving the folder structure makes it easier to navigate the project</li>
+                    <li>Semantic HTML feels simple but improves the styling structure</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <%- include("../partials/footer") %>

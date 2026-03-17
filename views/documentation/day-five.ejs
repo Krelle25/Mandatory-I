@@ -1,0 +1,258 @@
+    <%- include("../partials/head", { title, pageType }) %>
+
+<body>
+    <%- include("../partials/pageHeader", { heading, date }) %>
+
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>
+                    Day 5 was about serving static files in Express and understanding how JavaScript modules work.
+                </p>
+                <p>
+                    We looked at how to structure frontend files properly and how to import/export code both in Node.js and in the browser.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Serving Static Files in Express</h2>
+                <p>
+                    When building web apps with Express, frontend files like HTML, CSS,
+                    and JavaScript need to be accessible to the browser.
+                    This is done by telling Express which folder it should serve these files from. 
+                </p>
+                <p>Example configuration:</p>
+                <pre class="code-block"><code class="language-js">
+import express from 'express';
+
+const app = express();
+
+app.use(express.static('public'));
+                </code></pre>
+
+                <p>The <code>express.static()</code> middleware allows Express to serve files directly from a specified directory.</p>
+
+                <p>In this case, the <code>public</code> folder contains all client-side resources such as:</p>
+                <ul>
+                    <li>HTML files</li>
+                    <li>CSS files</li>
+                    <li>JavaScript files</li>
+                </ul>
+                <p>
+                    When a browser requests a file, Express looks for it inside the <code>public</code> directory
+                    and serves it automatically (if it exists).
+                </p>
+
+                <h3>Why This Matters</h3>
+                <p>
+                    Instead of exposing the whole project, we only expose the <code>public</code> folder.
+                    This helps avoid accidentally exposing server-side code.
+                </p>
+
+                <h3>Using <code>path.resolve()</code> in ES Modules</h3>
+                <p>
+                    When using ES Modules in Node.js, the global variable <code>__dirname</code> is not available.
+                    This variable is part of the older CommonJS module system.
+                </p>
+            
+                <p>Because of this, we use <code>path.resolve()</code> to construct the correct file path when sending files with Express.</p>
+
+                <p>Example:</p>
+
+                <pre class="code-block"><code class="language-js">
+import path from "path";
+
+app.get("/", (req, res) => {
+    res.sendFile(path.resolve("public/frontpage/frontpage.html"));
+});
+                </code></pre>
+
+                <p><code>path.resolve()</code> converts the relative path into an absolute path, which is required when using <code>res.sendFile()</code>.</p>
+
+                <p>Example of a project structure:</p>
+                <pre class="code-block"><code class="language-bash">
+├── public/
+│   ├── frontpage/
+│   │   ├── frontpage.html
+│   │   ├── frontpage.css
+|   |   └── frontpage.js
+│   └── cookieFactory/
+├── util/
+│   └── esModuleCookiesUtil.js
+├── package.json
+└── app.js            
+            </code></pre>
+            <ul>
+                <li>Only the files inside public can be accessed by the browser</li>
+                <li>Files outside this folder, such as server-side logic or utility files, remain protected and cannot be requested directly from the client</li>
+                <li>This separation helps avoid accidentally exposing server code</li>
+            </ul>
+        </section>
+
+            <section class="doc-section">
+                <h2>Working with Modules in Node.js</h2>
+                <p>Node.js has two module systems:</p>
+                <ul>
+                    <li>CommonJS (older)</li>
+                    <li>ES Modules (modern)</li>
+                </ul>
+                <p>Both allow JavaScript files to share code with each other.</p>
+
+                <h3>CommonJS</h3>
+                <p>
+                    Up until today, we have used CommonJS to share code between files,
+                    and this was the default module system used in Node.js for many years before ES Modules were introduced.
+                </p>
+                <p>It uses:</p>
+                <ul>
+                    <li><code>require()</code> to import code</li>
+                    <li><code>module.exports</code> to export code</li>
+                </ul>
+                <h4>Exporting in CommonJS</h4>
+                <pre class="code-block"><code class="language-js">
+const cookie = require("./cookie.json");
+
+function getCookie() {
+    return cookie;
+}
+
+module.exports = { getCookie };
+                </code></pre>
+
+                <h4>Importing in CommonJS</h4>
+                <pre class="code-block"><code class="language-js">
+const cookiesUtil = require('./util/commonjsCookiesUtil.js');
+                </code></pre>
+
+                <h3>ES Modules (Modern JavaScript Modules)</h3>
+                <p>ES Modules use the modern JavaScript syntax:</p>
+                <ul>
+                    <li><code>import</code></li>
+                    <li><code>export</code></li>
+                </ul>
+                <p>To enable ES Modules in Node.js, we add <code>"type": "module"</code> in the <code>package.json</code>:</p>
+
+                <pre class="code-block"><code class="language-json">
+{
+    "type": "module", 
+    "dependencies": {
+        "express": "^5.2.1"
+    }
+}
+                </code></pre>
+
+                <h4>Exporting with ES Modules</h4>
+                <p>There are two types of exports.</p>
+
+                <strong>Named exports</strong>
+                <pre class="code-block"><code class="language-js">
+export function esModuleCookieFactory() {
+    return "On a break...";
+}
+                </code></pre>
+                <strong>Default exports</strong>
+                <pre class="code-block"><code class="language-js">
+export default {
+    esModuleCookieFactory
+}
+                </code></pre>
+
+                <h4>Importing with ES Modules</h4>
+                <strong>Named import</strong>
+                <pre class="code-block"><code class="language-js">
+import { esModuleCookieFactory } from "./util/esModuleCookiesUtil.js";
+                </code></pre>
+
+                <strong>Default exports</strong>
+                <pre class="code-block"><code class="language-js">
+import cookiesUtil from "./util/esModuleCookiesUtil.js";
+                </code></pre>
+                
+                <h3>Some Pros of Using ES Modules</h3>
+                <ul>
+                    <li>ES Modules is the modern standard way of structuring JavaScript</li>
+                    <li>Works in both frontend and backend - the same <code>import</code> / <code>export</code> syntax works in Node.js and in browser scripts</li>
+                    <li>Better code organization, which means code can be split into smaller files and reused across a project</li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Modules in the Browser</h2>
+                <p>
+                    JavaScript modules can also be used directly in the browser.
+                    To enable this, the script tag must include <code>type="module"</code>.
+                </p>
+
+                <pre class="code-block"><code class="language-html">
+&lt;script type="module" src="./cookies.js"&gt;&lt;/script&gt;
+                </code></pre>
+                <p>
+                    Without <code>type="module"</code>, scripts share the same global scope.
+                    This means that variables can accidentally overwrite each other
+                    and the order of script loading must be handled manually.
+                </p>
+                <p>
+                    But <strong>with</strong> Modules, every script has its own scope and dependencies are handled automatically.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Redirection</h2>
+
+                <p>
+                    Redirection is when a user is sent from one page to another automatically.
+                    This can happen either on the client (in the browser) or on the server.
+                </p>
+
+                <h3>Client-side Redirection</h3>
+                <p>Client-side redirection happens in the browser after a page has already loaded.</p>
+
+                <pre class="code-block"><code class="language-js">
+setTimeout(() => {
+    window.location.href = "/";
+}, 3000);
+                </code></pre>
+                <p>Another way is by using a HTML meta tag:</p>
+
+                <pre class="code-block"><code class="language-html">
+&lt;meta http-equiv="refresh" content="3; url=/"&gt;
+                    </code></pre>
+
+                    <h3>Server-side Redirection</h3>
+
+                    <p>
+                        Server-side redirection happens before the page is sent to the browser.
+                        Express provides <code>res.redirect()</code> for this.
+                    </p>
+
+                    <pre class="code-block"><code class="language-js">
+app.get("/forecast", (req, res) => {
+    res.redirect("/snowstorms");
+});
+                    </code></pre>
+
+                    <h3>Difference Between Client and Server Redirects</h3>
+                    <ul>
+                        <li>Client-side redirects happen in the browser after the page loads.</li>
+                        <li>Server-side redirects happen on the server before the page loads.</li>
+                    </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Reflections (Day 5)</h2>
+                <ul>
+                    <li>Serving static files with <code>express.static()</code> is necessary so the browser can access frontend resources like HTML, CSS, and JavaScript.</li>
+                    <li>The <code>public</code> folder helps separate client-side files (frontend) from server-side code (backend), which also improves security.</li>
+                    <li>Node.js supports two module systems: <code>CommonJS</code> and <code>ES Modules</code>.</li>
+                    <li><code>ES Modules</code> use modern <code>import</code> and <code>export</code> syntax and work in both Node.js and the browser.</li>
+                    <li>When using modules in the browser, the script must include <code>type="module"</code>.</li>
+                    <li>Redirection can happen either on the client (in the browser) or on the server using Express.</li>
+                </ul>
+            </section>
+        </div>    
+    </main>
+    
+    <%- include("../partials/footer") %>

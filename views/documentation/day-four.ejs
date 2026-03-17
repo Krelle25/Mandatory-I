@@ -1,0 +1,188 @@
+    <%- include("../partials/head", { title, pageType }) %>
+
+<body>
+    <%- include("../partials/pageHeader", { heading, date }) %>
+
+    <main class="container day-content">
+        <%- include("../partials/toc") %>
+
+        <div class="doc-content">
+            <section class="doc-section">
+                <h2>Overview</h2>
+                <p>
+                    Day 4 was about working with time in JavaScript using the built-in <code>Date</code> object.
+                    We also worked on creating a simple proxy route, where the server fetches data from another source and returns it to the client.
+                </p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Working with Time in JavaScript</h2>
+                <p>JavaScript has a built-in <code>Date</code> object for handling time.</p>
+
+                <h3>Different ways to get time:</h3>
+                <pre class="code-block"><code class="language-js">
+new Date();     // Current date + time (UTC internally)
+Date();         // Local time as string
+Date.now();     // Unix Epoch time (milliseconds since Jan 1, 1970)
+                </code></pre>
+
+                <p>Unix Epoch time is important to understand because:</p>
+                <ul>
+                    <li>It is how time is stored and calculated internally</li>
+                    <li>It allows easy subtraction between two dates</li>
+                    <li>It is the foundation of most time calculations</li>
+                </ul>
+
+                <h3>Creating Routes with Date</h3>
+                <h4>Month - Version 1 (Manual Array)</h4>
+
+                <pre class="code-block"><code class="language-js">
+const months = ["January", "February", "March", "April",
+                "May", "June", "July", "August", 
+                "September", "October", "November", "December"
+    ];
+
+app.get('/months/v1', (req, res) => {
+    const currentMonth = new Date().getMonth();
+    res.send({ data: months[currentMonth] });
+});
+                </code></pre>
+                <p>Here:</p>
+                    <ul>
+                        <li><code>getMonth()</code> returns a number (0-11)</li>
+                        <li>We map that number to a readable string</li>
+                    </ul>
+                
+                    <h4>Month - Version 2 (Locale-Based)</h4>
+                    <pre class="code-block"><code class="language-js">
+app.get('/months/v2', (req, res) => {
+    const currentMonth = new Date().toLocaleString('en-uk', { month: 'long' });
+    res.send({ data: currentMonth });
+});
+                    </code></pre>
+                    <p>This version:</p>
+                    <ul>
+                        <li>Uses built-in localization</li>
+                        <li>Avoids manual arrays</li>
+                        <li>Is cleaner and more scalable</li>
+                    </ul>
+
+                    <h3>Day Routes</h3>
+                    <h4>Day - Version 1 (Manual Array)</h4>
+                    <pre class="code-block"><code class="language-js">
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 
+            'Thursday', 'Friday', 'Saturday'
+];
+
+app.get('/days/v1', (req, res) => {
+    res.send({ data: days[new Date().getDay()] });
+});
+                    </code></pre>
+
+                    <h4>Day - Version 2 (Locale-Based)</h4>
+                    <pre class="code-block"><code class="language-js">
+app.get('/days/v2', (req, res) => {
+    const weekday = new Date().toLocaleString('en-uk', { weekday: 'long' });
+    res.send({ data: weekday });
+});
+                    </code></pre>
+                    <p>Again, the second version is preferred because it uses built-in localization instead of manual mapping.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Falsey Values in JavaScript</h2>
+                <p>The following values are considered falsey:</p>
+                <ul>
+                    <li><code>false</code></li>
+                    <li><code>null</code></li>
+                    <li><code>undefined</code></li>
+                    <li><code>NaN</code></li>
+                    <li><code>""</code> (empty strings)</li>
+                </ul>
+                <p>Understanding falsy values is important when validating input or checking conditions.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Proxy Route (Server-side Fetch)</h2>
+                <p>
+                    We added a route that fetches a page from another website and serves it to the client.
+                    This is called a proxy.
+                </p>
+
+                <h3>Proxy - Simple Version</h3>
+                <pre class="code-block"><code class="language-js">
+app.get("/proxy", async (req, res) => {
+    const response = await fetch("https://www.google.com/");
+    const html = await response.text();
+    res.send(html);
+});
+                </code></pre>
+
+                <h3>Proxy - Handling encoding (when characters look broken)</h3>
+                <p>
+                    Sometimes you can get weird characters (æ/ø/å, symbols, etc.) if the response encoding isn't what you expect. 
+                    In that case, you can decode an ArrayBuffer manually:
+                </p>
+                <pre class="code-block"><code class="language-js">
+app.get("/proxy", async (req, res) => {
+    const response = await fetch("https://www.google.com/");
+    const buffer = await response.arrayBuffer(); // IMPORTANT: arrayBuffer (not text)
+    const decoder = new TextDecoder("ISO-8859-1");
+    const html = decoder.decode(buffer);
+    res.send(html);
+});
+                </code></pre>
+                <p>Important difference:</p>
+                <ul>
+                    <li><code>response.text()</code> gives you a string already (no manual decode needed)</li>
+                    <li><code>TextDecoder(...)</code> should be used with <code>response.arrayBuffer()</code> (raw data)</li>
+                </ul>
+            </section>
+
+            <section class="doc-section">
+                <h2>Deployment with Vercel</h2>
+
+                <p>
+                    To make our Node/Express applications accessible online, using Vercel is a great option.
+                    Vercel is a cloud platform that allows applications to be deployed directly from a Git repository.
+                </p>
+
+                <p>
+                    After connecting your GitHub-user to Vercel aswell as your repository, the platform automatically builds and deploys the project.
+                    We added a configuration file called <code>vercel.json</code> was added to tell Vercel how the Node server should run.
+                </p>
+
+                <h3>Vercel Configuration</h3>
+                <pre class="code-block"><code class="language-json">
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "app.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "app.js"
+      }
+    ]
+}
+                </code></pre>
+                <p>With this setup, the Express server can handle requests on Vercel just like it does locally.</p>
+            </section>
+
+            <section class="doc-section">
+                <h2>Reflections (Day 4)</h2>
+                <ul>
+                    <li>Working with time in JavaScript is a bit confusing at first (especially months starting at 0)</li>
+                    <li>Using built-in methods like <code>toLocaleString</code> is way better than hardcoding arrays</li>
+                    <li>Proxy routes are useful when fetching data from other sources</li>
+                    <li>With Vercel, Deployment is actually not that complicated once everything is set up</li>
+                </ul>
+            </section>
+        </div> 
+    </main>
+
+    <%- include("../partials/footer") %>
