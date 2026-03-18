@@ -170,9 +170,38 @@ const lastName = "Steffensen";
                 <h2>Automatic Semicolon Insertion (ASI)</h2>
                 <p>
                     JavaScript automatically inserts semicolons in many cases.
-                    This is called "Automatic Semicolon Insertion".
+                    This is called <strong>Automatic Semicolon Insertion</strong>.
                     Although this is a smart feature, relying on ASI is not recommended, as it can sometimes lead to weird and unexpected behavior.
                     It is better to write the semicolons yourself and keep it consistent. 
+                </p>
+
+                <h3>Example of ASI</h3>
+                <h4>Weird version</h4>
+
+                <pre class="code-block"><code class="language-js">
+function getUser() {
+    return // ← ASI inserts a semicolon here 
+    {
+        name: "Kristian"
+    };
+}
+
+console.log(getUser()); // result: undefined
+                </code></pre>
+
+                <h4>Correct version</h4>
+                <pre class="code-block"><code class="language-js">
+function getUser() {
+    return {
+        name: "Kristian"
+    };
+}
+
+console.log(getUser()); // result: { name: "Kristian" }
+                </code></pre>
+                <p>
+                    In the first example, ASI inserts a semicolon after <code>return</code>,
+                    so the function returns <code>undefined</code> before reaching the object.
                 </p>
             </section>
 

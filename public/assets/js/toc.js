@@ -1,61 +1,59 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const headings = Array.from(document.querySelectorAll(".doc-content .doc-section h2"));
-    const aside = document.querySelector("#toc");
+    const headings = [...document.querySelectorAll(".doc-content .doc-section h2")];
+    const toc = document.querySelector("#toc");
 
-    if (!aside || !headings.length) return;
+    if (!toc || headings.length === 0) return;
+
+    const createId = (text) =>
+        text
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "_")
+            .replace(/[^\w-]/g, "");
 
     const ul = document.createElement("ul");
-    aside.appendChild(ul);
 
     headings.forEach((heading, index) => {
-        let id = heading.id;
-
-        if (!id) {
-            id = heading.textContent
-                .toLowerCase()
-                .trim()
-                .replace(/\s+/g, "_")
-                .replace(/[^\w-]/g, "");
-            heading.setAttribute("id", id);
+        if (!heading.id) {
+            heading.id = createId(heading.textContent);
         }
 
         const li = document.createElement("li");
-        const a = document.createElement("a");
+        const link = document.createElement("a");
 
-        a.href = `#${id}`;
-        a.textContent = heading.textContent;
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent;
 
         if (index === 0) {
-            a.classList.add("active");
+            link.classList.add("active");
         }
 
-        li.appendChild(a);
+        li.appendChild(link);
         ul.appendChild(li);
     });
 
-    const tocAnchors = Array.from(aside.querySelectorAll("a"));
+    toc.appendChild(ul);
 
-    const observer = new IntersectionObserver(
-        (entries) => {
-            const visibleEntry = entries
-                .filter((entry) => entry.isIntersecting)
-                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    const tocLinks = [...document.querySelectorAll("#toc a")];
 
-            if (!visibleEntry) return;
+    const observer = new IntersectionObserver((entries) => {
+        const visibleHeading = entries
+            .filter(entry => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-            const index = headings.indexOf(visibleEntry.target);
+        if (!visibleHeading) return;
 
-            tocAnchors.forEach((anchor) => anchor.classList.remove("active"));
+        const activeIndex = headings.indexOf(visibleHeading.target);
 
-            if (tocAnchors[index]) {
-                tocAnchors[index].classList.add("active");
-            }
-        },
-        {
-            rootMargin: "-120px 0px -60% 0px",
-            threshold: [0.1, 0.25, 0.5, 0.75, 1]
+        tocLinks.forEach(link => link.classList.remove("active"));
+
+        if (tocLinks[activeIndex]) {
+            tocLinks[activeIndex].classList.add("active");
         }
-    );
+    }, {
+        rootMargin: "-120px 0px -60% 0px",
+        threshold: [0.1, 0.25, 0.5, 0.75, 1]
+    });
 
-    headings.forEach((heading) => observer.observe(heading));
+    headings.forEach(heading => observer.observe(heading));
 });
