@@ -168,13 +168,21 @@ app.get('/about', (req, res) => {
                 <h2>SSR vs CSR</h2>
 
                 <h3>SSR (Server-side rendering)</h3>
+                <p>
+                    In SSR, the server generates the full HTML page before sending it to the browser.
+                    This means the browser receives a ready-to-display page.
+                </p>
+                
                 <ul>
                     <li>Server sends ready HTML</li>
                     <li>Faster first load</li>
-                    <li>Better for SEO</li>
+                    <li>Better for SEO (Search Engine Optimization)</li>
                 </ul>
 
                 <h3>CSR (Client-side rendering)</h3>
+                <p>
+                    In CSR, the browser first loads a basic HTML file and then uses JavaScript to fetch data and build the page dynamically.
+                </p>
                 <ul>
                     <li>Browser builds the page</li>
                     <li>More work on client</li>
@@ -183,11 +191,14 @@ app.get('/about', (req, res) => {
 
                 <h3>Other differences</h3>
                 <ul>
-                    <li>SSR avoids CORS issues</li>
+                    <li>SSR avoids many CORS issues bacause rendering happens on the server</li>
                     <li>CSR often requires API calls from browser</li>
                 </ul>
 
-                <p>In simple terms, SSR focuses on faster first load, while CSR focuses on dynamic interaction after the page has loaded.</p>
+                <p>
+                    In simple terms, SSR focuses on delivering a ready page quickly,
+                    while CSR focuses on building the page dynamically in the browser.
+                </p>
             </section>
 
             <section class="doc-section">
