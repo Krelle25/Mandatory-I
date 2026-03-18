@@ -211,7 +211,10 @@ app.get('/about', (req, res) => {
 }
                 </code></pre>
 
-                <p>This makes nodemon restart when more file types change.</p>
+                <p>
+                    By defualt, nodemon only watches certain file types.
+                    This configuration tells nodemon to also restart the server when <code>json</code>,
+                    <code>html</code>, and <code>css</code> files change.</p>
             </section>
 
             <section class="doc-section">
